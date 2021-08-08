@@ -16,12 +16,30 @@ const port = 5000
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 client.connect(err => {
   const usersCollection = client.db(`${process.env.DB_NAME}`).collection("users");
+  const servicesCollection = client.db(`${process.env.DB_NAME}`).collection("services");
 
   console.log("Database connected");
   app.get('/', (req, res) => {
     res.send("Welcome to E-Sheba server.")
   })
-  //   client.close();
+
+  app.post('/addService', (req, res) => {
+    const service = req.body;
+    console.log(service)
+    servicesCollection.insertOne(service)
+      .then(result => {
+        res.send(result.insertedCount > 0)
+        console.log(result)
+      })
+  });
+
+  app.get('/services', (req, res) => {
+    servicesCollection.find({})
+      .toArray((err, documents) => {
+        res.send(documents)
+      })
+  })
+
 });
 
 app.listen(process.env.PORT || port);
