@@ -17,6 +17,7 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 client.connect(err => {
   const usersCollection = client.db(`${process.env.DB_NAME}`).collection("users");
   const servicesCollection = client.db(`${process.env.DB_NAME}`).collection("services");
+  const adminCollection = client.db(`${process.env.DB_NAME}`).collection("admin");
 
   console.log("Database connected");
   app.get('/', (req, res) => {
@@ -25,16 +26,29 @@ client.connect(err => {
 
   app.post('/addService', (req, res) => {
     const service = req.body;
-    console.log(service)
     servicesCollection.insertOne(service)
       .then(result => {
         res.send(result.insertedCount > 0)
-        console.log(result)
+      })
+  });
+
+  app.post('/addAdmin', (req, res) => {
+    const admin = req.body;
+    adminCollection.insertOne(admin)
+      .then(result => {
+        res.send(result.insertedCount > 0)
       })
   });
 
   app.get('/services', (req, res) => {
     servicesCollection.find({})
+      .toArray((err, documents) => {
+        res.send(documents)
+      })
+  })
+
+  app.get('/admins', (req, res) => {
+    adminCollection.find({})
       .toArray((err, documents) => {
         res.send(documents)
       })
