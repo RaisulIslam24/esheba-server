@@ -24,6 +24,26 @@ client.connect(err => {
     res.send("Welcome to E-Sheba server.")
   })
 
+  app.post('/addUser', (req, res) => {
+    const user = req.body;
+    usersCollection.findOne({ email: user.email })
+      .then(result => {
+        if (result) {
+          if (result.role === user.role) {
+            res.send(true);
+          } else {
+            res.send(false);
+          }
+        } else {
+          usersCollection.insertOne(user)
+            .then(result => {
+              res.send(result.acknowledged);
+            })
+        }
+      })
+
+  })
+
   app.post('/addService', (req, res) => {
     const service = req.body;
     servicesCollection.insertOne(service)
