@@ -70,10 +70,25 @@ client.connect(err => {
   app.get('/admins', (req, res) => {
     adminCollection.find({})
       .toArray((err, documents) => {
-        res.send(documents)
+        res.send(documents);
       })
   })
 
+  app.get('/loadAll/:role', (req, res) => {
+    usersCollection.find({role: req.params.role})
+    .toArray((err, documents) => {
+      res.send(documents);
+    })
+  })
+
+  app.post('/checkAdmin', (req, res) => {
+    adminCollection.find({adminEmail: req.body.email})
+      .toArray((err, documents) => {
+        res.send(documents.length > 0)
+      })
+  })
 });
+
+
 
 app.listen(process.env.PORT || port);
