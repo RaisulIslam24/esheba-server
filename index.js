@@ -47,6 +47,13 @@ client.connect(err => {
       })
   })
 
+  app.get('/serviceDetails/:_id', (req, res)=>{
+    servicesCollection.find({_id: ObjectId(req.params._id)})
+    .toArray((err, service)=>{
+      res.send(service[0]);
+    })
+  })
+
   app.get('/admins', (req, res) => {
     adminCollection.find({})
       .toArray((err, documents) => {
