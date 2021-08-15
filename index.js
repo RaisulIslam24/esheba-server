@@ -13,6 +13,10 @@ app.use(cors());
 
 const port = 5000
 
+app.get('/', (req, res) => {
+  res.send("Welcome to E-Sheba server.")
+})
+
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 client.connect(err => {
   const usersCollection = client.db(`${process.env.DB_NAME}`).collection("users");
@@ -20,9 +24,7 @@ client.connect(err => {
   const adminCollection = client.db(`${process.env.DB_NAME}`).collection("admin");
 
   console.log("Database connected");
-  app.get('/', (req, res) => {
-    res.send("Welcome to E-Sheba server.")
-  })
+
 
   app.post('/addUser', (req, res) => {
     const user = req.body;
@@ -104,6 +106,23 @@ client.connect(err => {
         console.log(result)
       })
   })
+
+
+  app.patch('/updateService/:_id', (req, res) => {
+    const UpdatedValues = req.body;
+    console.log(UpdatedValues)
+    servicesCollection.updateOne(
+      { _id: ObjectId(req.params._id) },
+      { $set: { isAvaiable: UpdatedValues.isAvaiable, serviceName: UpdatedValues.serviceName, price: UpdatedValues.price, image: UpdatedValues.image, } }
+    )
+      .then(result => {
+        res.send(result.modifiedCount > 0)
+        console.log('updated!')
+        console.log(result)
+      })
+  })
+
+
 
 });
 
