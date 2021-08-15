@@ -50,7 +50,7 @@ client.connect(err => {
       .then(result => {
         res.send(result.insertedCount > 0)
       })
-  });
+  })
 
   app.post('/addAdmin', (req, res) => {
     const admin = req.body;
@@ -58,7 +58,16 @@ client.connect(err => {
       .then(result => {
         res.send(result.insertedCount > 0)
       })
-  });
+  })
+
+  app.post('/checkAdmin', (req, res) => {
+    adminCollection.find({ adminEmail: req.body.email })
+      .toArray((err, documents) => {
+        res.send(documents.length > 0)
+      })
+  })
+
+
 
   app.get('/services', (req, res) => {
     servicesCollection.find({})
@@ -67,12 +76,13 @@ client.connect(err => {
       })
   })
 
-  app.get('/serviceDetails/:_id', (req, res)=>{
-    servicesCollection.find({_id: ObjectId(req.params._id)})
-    .toArray((err, service)=>{
-      res.send(service[0]);
-    })
+  app.get('/serviceDetails/:_id', (req, res) => {
+    servicesCollection.find({ _id: ObjectId(req.params._id) })
+      .toArray((err, service) => {
+        res.send(service[0]);
+      })
   })
+
 
   app.get('/admins', (req, res) => {
     adminCollection.find({})
@@ -82,18 +92,19 @@ client.connect(err => {
   })
 
   app.get('/loadAll/:role', (req, res) => {
-    usersCollection.find({role: req.params.role})
-    .toArray((err, documents) => {
-      res.send(documents);
-    })
-  })
-
-  app.post('/checkAdmin', (req, res) => {
-    adminCollection.find({adminEmail: req.body.email})
+    usersCollection.find({ role: req.params.role })
       .toArray((err, documents) => {
-        res.send(documents.length > 0)
+        res.send(documents);
       })
   })
+
+  app.delete('/deleteService/:id', (req, res) => {
+    servicesCollection.deleteOne({ _id: ObjectId(req.params.id) })
+      .then(result => {
+        console.log(result)
+      })
+  })
+
 });
 
 
