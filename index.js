@@ -22,6 +22,7 @@ client.connect(err => {
   const usersCollection = client.db(`${process.env.DB_NAME}`).collection("users");
   const servicesCollection = client.db(`${process.env.DB_NAME}`).collection("services");
   const adminCollection = client.db(`${process.env.DB_NAME}`).collection("admin");
+  const reviewsCollection = client.db(`${process.env.DB_NAME}`).collection("reviews");
 
   console.log("Database connected");
 
@@ -122,7 +123,28 @@ client.connect(err => {
       })
   })
 
+  app.post('/addReview', (req, res) => {
+    const review = req.body;
+    reviewsCollection.find({ email: review.email })
+      .toArray((err, documents) => {
+        if (documents.length > 0) {
+          res.send(false);
+        } else {
+          reviewsCollection.insertOne(review)
+            .then(result => {
+              res.send(result.acknowledged);
+            })
+        }
+      })
 
+  })
+
+  app.get('/reviews', (req, res) => {
+    reviewsCollection.find({})
+    .toArray( (err, documents) => {
+      res.send(documents);
+    })
+  })
 
 });
 
