@@ -123,6 +123,7 @@ client.connect(err => {
       })
   })
 
+  // Add review
   app.post('/addReview', (req, res) => {
     const review = req.body;
     reviewsCollection.find({ email: review.email })
@@ -139,6 +140,7 @@ client.connect(err => {
 
   })
 
+  // Load all reviews from database
   app.get('/reviews', (req, res) => {
     reviewsCollection.find({})
     .toArray( (err, documents) => {
