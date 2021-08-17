@@ -109,6 +109,14 @@ client.connect(err => {
   })
 
 
+  app.delete('/deleteReview/:id', (req, res) => {
+    reviewsCollection.deleteOne({ _id: ObjectId(req.params.id) })
+      .then(result => {
+        console.log(result)
+      })
+  })
+
+
   app.patch('/updateService/:_id', (req, res) => {
     const UpdatedValues = req.body;
     console.log(UpdatedValues)
@@ -137,15 +145,14 @@ client.connect(err => {
             })
         }
       })
-
   })
 
   // Load all reviews from database
   app.get('/reviews', (req, res) => {
     reviewsCollection.find({})
-    .toArray( (err, documents) => {
-      res.send(documents);
-    })
+      .toArray((err, documents) => {
+        res.send(documents);
+      })
   })
 
 });
