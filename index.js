@@ -116,6 +116,20 @@ client.connect(err => {
       })
   })
 
+  app.delete('/deleteConsumer/:id', (req, res) => {
+    usersCollection.deleteOne({ _id: ObjectId(req.params.id) })
+      .then(result => {
+        console.log(result)
+      })
+  })
+
+  app.delete('/deleteProvider/:id', (req, res) => {
+    usersCollection.deleteOne({ _id: ObjectId(req.params.id) })
+      .then(result => {
+        console.log(result)
+      })
+  })
+
 
   app.patch('/updateService/:_id', (req, res) => {
     const UpdatedValues = req.body;
