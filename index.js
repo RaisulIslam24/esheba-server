@@ -101,6 +101,24 @@ client.connect(err => {
       })
   })
 
+
+  app.get('/provider-own-service/:serviceProviderEmail', (req, res) => {
+    servicesCollection.find({ serviceProviderEmail: req.params.serviceProviderEmail })
+      .toArray((err, documents) => {
+        res.send(documents);
+      })
+  })
+
+
+
+  app.delete('/delete-provider-own-service/:id', (req, res) => {
+    servicesCollection.deleteOne({ _id: ObjectId(req.params.id) })
+      .then(result => {
+        console.log(result)
+      })
+  })
+
+
   app.delete('/deleteService/:id', (req, res) => {
     servicesCollection.deleteOne({ _id: ObjectId(req.params.id) })
       .then(result => {
