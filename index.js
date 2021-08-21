@@ -13,16 +13,19 @@ app.use(cors());
 
 const port = 5000
 
+app.get('/', (req, res) => {
+  res.send("Welcome to E-Sheba server.")
+})
+
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 client.connect(err => {
   const usersCollection = client.db(`${process.env.DB_NAME}`).collection("users");
   const servicesCollection = client.db(`${process.env.DB_NAME}`).collection("services");
   const adminCollection = client.db(`${process.env.DB_NAME}`).collection("admin");
+  const reviewsCollection = client.db(`${process.env.DB_NAME}`).collection("reviews");
 
   console.log("Database connected");
-  app.get('/', (req, res) => {
-    res.send("Welcome to E-Sheba server.")
-  })
+
 
   app.post('/addUser', (req, res) => {
     const user = req.body;
@@ -50,7 +53,7 @@ client.connect(err => {
       .then(result => {
         res.send(result.insertedCount > 0)
       })
-  });
+  })
 
   app.post('/addAdmin', (req, res) => {
     const admin = req.body;
@@ -58,7 +61,16 @@ client.connect(err => {
       .then(result => {
         res.send(result.insertedCount > 0)
       })
-  });
+  })
+
+  app.post('/checkAdmin', (req, res) => {
+    adminCollection.find({ adminEmail: req.body.email })
+      .toArray((err, documents) => {
+        res.send(documents.length > 0)
+      })
+  })
+
+
 
   app.get('/services', (req, res) => {
     servicesCollection.find({})
@@ -67,10 +79,111 @@ client.connect(err => {
       })
   })
 
+  app.get('/serviceDetails/:_id', (req, res) => {
+    servicesCollection.find({ _id: ObjectId(req.params._id) })
+      .toArray((err, service) => {
+        res.send(service[0]);
+      })
+  })
+
+
   app.get('/admins', (req, res) => {
     adminCollection.find({})
       .toArray((err, documents) => {
-        res.send(documents)
+        res.send(documents);
+      })
+  })
+
+  app.get('/loadAll/:role', (req, res) => {
+    usersCollection.find({ role: req.params.role })
+      .toArray((err, documents) => {
+        res.send(documents);
+      })
+  })
+
+
+  app.get('/provider-own-service/:serviceProviderEmail', (req, res) => {
+    servicesCollection.find({ serviceProviderEmail: req.params.serviceProviderEmail })
+      .toArray((err, documents) => {
+        res.send(documents);
+      })
+  })
+
+
+
+  app.delete('/delete-provider-own-service/:id', (req, res) => {
+    servicesCollection.deleteOne({ _id: ObjectId(req.params.id) })
+      .then(result => {
+        console.log(result)
+      })
+  })
+
+
+  app.delete('/deleteService/:id', (req, res) => {
+    servicesCollection.deleteOne({ _id: ObjectId(req.params.id) })
+      .then(result => {
+        console.log(result)
+      })
+  })
+
+
+  app.delete('/deleteReview/:id', (req, res) => {
+    reviewsCollection.deleteOne({ _id: ObjectId(req.params.id) })
+      .then(result => {
+        console.log(result)
+      })
+  })
+
+  app.delete('/deleteConsumer/:id', (req, res) => {
+    usersCollection.deleteOne({ _id: ObjectId(req.params.id) })
+      .then(result => {
+        console.log(result)
+      })
+  })
+
+  app.delete('/deleteProvider/:id', (req, res) => {
+    usersCollection.deleteOne({ _id: ObjectId(req.params.id) })
+      .then(result => {
+        console.log(result)
+      })
+  })
+
+
+  app.patch('/updateService/:_id', (req, res) => {
+    const UpdatedValues = req.body;
+    console.log(UpdatedValues)
+    servicesCollection.updateOne(
+      { _id: ObjectId(req.params._id) },
+      { $set: { isAvaiable: UpdatedValues.isAvaiable, serviceName: UpdatedValues.serviceName, price: UpdatedValues.price, image: UpdatedValues.image, } }
+    )
+      .then(result => {
+        res.send(result.modifiedCount > 0)
+        console.log('updated!')
+        console.log(result)
+      })
+  })
+
+  // Add review
+  app.post('/addReview', (req, res) => {
+    const review = req.body;
+    reviewsCollection.find({ email: review.email })
+      .toArray((err, documents) => {
+        if (documents.length > 0) {
+          res.send(false);
+        } else {
+          reviewsCollection.insertOne(review)
+            .then(result => {
+              res.send(result.acknowledged);
+            })
+        }
+      })
+  })
+
+  // Load all reviews from database
+  app.get('/reviews', (req, res) => {
+    reviewsCollection.find({})
+      .toArray((err, documents) => {
+        res.send(documents);
       })
   })
 
@@ -91,5 +204,7 @@ client.connect(err => {
   })
 
 });
+
+
 
 app.listen(process.env.PORT || port);
