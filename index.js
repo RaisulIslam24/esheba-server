@@ -74,6 +74,22 @@ client.connect(err => {
       })
   })
 
+  app.delete('/deleteService/:id', (req, res) => {
+    const id = ObjectId(req.params.id);
+    servicesCollection.findOneAndDelete({ _id: id })
+      .then(documents => res.send(!!documents.value))
+  })
+
+  app.patch('/editService/:id', (req, res) => {
+    bookingCollection.updateOne({ _id: ObjectID(req.params.id) },
+      {
+        $set: { status: req.body.status }
+      })
+      .then(result => {
+        res.send(result.modifiedCount > 0)
+      })
+  })
+
 });
 
 app.listen(process.env.PORT || port);
