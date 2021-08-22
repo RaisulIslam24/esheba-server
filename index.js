@@ -23,6 +23,7 @@ client.connect(err => {
   const servicesCollection = client.db(`${process.env.DB_NAME}`).collection("services");
   const adminCollection = client.db(`${process.env.DB_NAME}`).collection("admin");
   const reviewsCollection = client.db(`${process.env.DB_NAME}`).collection("reviews");
+  const ordersCollection = client.db(`${process.env.DB_NAME}`).collection("orders");
 
   console.log("Database connected");
 
@@ -187,19 +188,20 @@ client.connect(err => {
       })
   })
 
-  app.delete('/deleteService/:id', (req, res) => {
-    const id = ObjectId(req.params.id);
-    servicesCollection.findOneAndDelete({ _id: id })
-      .then(documents => res.send(!!documents.value))
+  // Add Order
+  app.post('/addOrder', (req, res) => {
+    const order = req.body;
+    ordersCollection.insertOne(order)
+      .then(result => {
+        res.send(result.insertedCount > 0)
+      })
   })
 
-  app.patch('/editService/:id', (req, res) => {
-    bookingCollection.updateOne({ _id: ObjectID(req.params.id) },
-      {
-        $set: { status: req.body.status }
-      })
-      .then(result => {
-        res.send(result.modifiedCount > 0)
+  // Show Orders
+  app.get('/orders', (req, res) => {
+    ordersCollection.find({})
+      .toArray((err, documents) => {
+        res.send(documents)
       })
   })
 
