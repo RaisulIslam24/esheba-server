@@ -164,7 +164,9 @@ client.connect(err => {
       })
   })
 
-  // Add review
+
+
+  // Review method.............
   app.post('/addReview', (req, res) => {
     const review = req.body;
     reviewsCollection.find({ email: review.email })
@@ -179,8 +181,6 @@ client.connect(err => {
         }
       })
   })
-
-  // Load all reviews from database
   app.get('/reviews', (req, res) => {
     reviewsCollection.find({})
       .toArray((err, documents) => {
@@ -188,7 +188,10 @@ client.connect(err => {
       })
   })
 
-  // Add Order
+
+
+
+  // Order method............
   app.post('/addOrder', (req, res) => {
     const order = req.body;
     ordersCollection.insertOne(order)
@@ -198,7 +201,6 @@ client.connect(err => {
       })
   })
 
-  // Show Orders
   app.get('/orders', (req, res) => {
     ordersCollection.find({})
       .toArray((err, documents) => {
@@ -206,6 +208,16 @@ client.connect(err => {
       })
   })
 
+  app.delete('/deleteOrder/:id', (req, res) => {
+    ordersCollection.deleteOne({ _id: ObjectId(req.params.id) })
+      .then(result => {
+        console.log(result)
+      })
+  })
+
+
+
+  
 });
 
 
