@@ -230,6 +230,14 @@ client.connect(err => {
   })
 
 
+  // consumer order....
+  app.get('/own-order/:email', (req, res) => {
+    ordersCollection.find({ email: req.params.email })
+      .toArray((err, documents) => {
+        res.send(documents);
+      })
+  })
+
   // provider received order method...........
   app.get('/received-order/:serviceProviderEmail', (req, res) => {
     const serviceProviderEmail = req.params.serviceProviderEmail;
