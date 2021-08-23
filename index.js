@@ -215,6 +215,20 @@ client.connect(err => {
       })
   })
 
+  app.patch('/updateOrder/:_id', (req, res) => {
+    const UpdatedValues = req.body;
+    console.log(UpdatedValues)
+    ordersCollection.updateOne(
+      { _id: ObjectId(req.params._id) },
+      { $set: { status: UpdatedValues.status } }
+    )
+      .then(result => {
+        res.send(result.modifiedCount > 0)
+        console.log('updated!')
+        console.log(result)
+      })
+  })
+
 
 
   
