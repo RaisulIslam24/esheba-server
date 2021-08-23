@@ -231,7 +231,15 @@ client.connect(err => {
 
 
 
-  
+  // own order method...........
+  app.get('/own-order/:email', (req, res) => {
+    ordersCollection.find({ email: req.params.email })
+      .toArray((err, documents) => {
+        res.send(documents);
+      })
+  })
+
+
 });
 
 
