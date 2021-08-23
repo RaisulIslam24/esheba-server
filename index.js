@@ -155,7 +155,7 @@ client.connect(err => {
     console.log(UpdatedValues)
     servicesCollection.updateOne(
       { _id: ObjectId(req.params._id) },
-      { $set: { isAvaiable: UpdatedValues.isAvaiable, serviceName: UpdatedValues.serviceName, price: UpdatedValues.price, image: UpdatedValues.image, } }
+      { $set: { isAvaiable: UpdatedValues.isAvaiable, serviceName: UpdatedValues.serviceName, price: UpdatedValues.price, serviceImage: UpdatedValues.serviceImage, } }
     )
       .then(result => {
         res.send(result.modifiedCount > 0)
