@@ -230,10 +230,10 @@ client.connect(err => {
   })
 
 
-
-  // own order method...........
-  app.get('/own-order/:email', (req, res) => {
-    ordersCollection.find({ email: req.params.email })
+  // provider received order method...........
+  app.get('/received-order/:serviceProviderEmail', (req, res) => {
+    const serviceProviderEmail = req.params.serviceProviderEmail;
+    ordersCollection.find({ serviceProviderEmail: serviceProviderEmail, $or: [{ status: "ongoing" }, { status: "done" }] })
       .toArray((err, documents) => {
         res.send(documents);
       })
